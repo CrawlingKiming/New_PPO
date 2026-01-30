@@ -1,0 +1,113 @@
+<h1 align="center">
+	Simple Policy Optimization<br>
+</h1>
+
+<p align="center">
+  Zhengpeng Xie*, Qiang Zhang*, Fan Yang*, Marco Hutter, Renjing Xu
+</p>
+
+<p align="center">
+  HKUST(GZ), ETH Zurich
+</p>
+
+<p align="center">
+	
+  [zhengpengxie@hkust-gz.edu.cn](mailto:example@example.com), [qzhang749@connect.hkust-gz.edu.cn](mailto:example@example.com), [fanyang1@ethz.ch](mailto:example@example.com), [mahutter@ethz.ch](mailto:example@example.com), [renjingxu@hkust-gz.edu.cn](mailto:example@example.com)
+</p>
+
+Accepted to <i style="color: black; display: inline;"><b>International Conference on Machine Learning (ICML 2025)</b></i> | [website](https://openreview.net/forum?id=SG8Yx1FyeU)<br>
+
+<div align="center">
+  <img src="gradient.png" width="70%">
+</div>
+
+**Caption:** By slightly modifying the policy loss in PPO, SPO enforces trust region constraints without relying on the expensive second-order optimization used in TRPO, leading to stable performance improvements.
+
+<div align="center">
+  <img src="result.png" width="90%">
+</div>
+
+**Caption:** SPO simplifies the training of deep policy networks, addressing a key challenge faced by existing algorithms.
+
+<div align="center">
+  <img src="atari.png" width="100%">
+</div>
+
+**Additional experiments:** We evaluate the training performance by using ResNet-18 as the encoder (remove BatchNorm), reporting the mean and standard deviation across 3 seeds on 54 Atari 2600 games. To test robustness, we fix the learning rate at 1e-4 and remove linear decay. Under these settings, PPO fails to learn effectively in a large number of environments, whereas SPO demonstrates strong performance.
+
+# Installation
+To ensure the reproducibility of our main results, please follow the steps below to install the dependencies.
+
+## MuJoCo
+Create Anaconda environment:
+```bash
+conda create -n mujoco_py311 python=3.11 --yes
+conda activate mujoco_py311
+```
+
+Install the mujoco requirements:
+```bash
+cd mujoco
+pip install -r requirements.txt
+```
+
+Choose the CUDA version on the official PyTorch website: https://pytorch.org/
+```bash
+pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+```
+
+Install the remaining requirements:
+```bash
+pip install gymnasium[mujoco]
+```
+
+Start training:
+```bash
+python main.py
+```
+
+## Atari
+Create Anaconda environment:
+```bash
+conda create -n atari_py311 python=3.11 --yes
+conda activate atari_py311
+```
+
+Install the atari requirements:
+```bash
+cd atari
+pip install -r requirements.txt
+```
+
+Choose the CUDA version on the official PyTorch website: [https://pytorch.org/](https://pytorch.org/)
+```bash
+pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+```
+
+Install the remaining requirements:
+```bash
+pip install gymnasium[atari]
+pip install gymnasium[accept-rom-license]
+pip install gymnasium[other]
+```
+
+Start training:
+```bash
+python main.py
+```
+
+# Citing SPO
+If you find SPO helpful, please cite our paper:
+```bash
+@inproceedings{
+	xie2025simple,
+	title={Simple Policy Optimization},
+	author={Zhengpeng Xie and Qiang Zhang and Fan Yang and Marco Hutter and Renjing Xu},
+	booktitle={Forty-second International Conference on Machine Learning},
+	year={2025},
+	url={https://openreview.net/forum?id=SG8Yx1FyeU}
+}
+```
+
+# Acknowledgement
+Our code is mainly based on [cleanrl](https://github.com/vwxyzjn/cleanrl), many thanks to their efforts for the community.
