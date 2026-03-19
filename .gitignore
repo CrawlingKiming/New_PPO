@@ -1,0 +1,14 @@
+# Python
+__pycache__/
+*.py[cod]
+
+# Local environment / editor noise
+.DS_Store
+
+# Generated experiment outputs
+results/
+MUJOCO/MUJOCO/
+deprecated/
+
+# TensorBoard event files and local run folders
+events.out.tfevents.*

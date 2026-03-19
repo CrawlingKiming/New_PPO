@@ -1,4 +1,5 @@
 import argparse
+import copy
 import time
 
 import gymnasium as gym
@@ -22,6 +23,9 @@ from trainer import Trainer
 
 def get_args():
     parser = argparse.ArgumentParser()
+    parser.add_argument('--algo', choices=['ppo', 'spo', 'opo', 'opspo'], default='spo')
+    parser.add_argument('--envs', type=str, default=None, help='Comma-separated Atari env IDs (without NoFrameskip-v4)')
+    parser.add_argument('--seeds', type=str, default=None, help='Comma-separated random seeds')
     parser.add_argument('--use_resnet', type=bool, default=True)
     parser.add_argument('--use_cuda', type=bool, default=True)
     parser.add_argument('--torch_deterministic', type=bool, default=True)
@@ -40,6 +44,11 @@ def get_args():
     parser.add_argument('--c_2', type=float, default=0.01)
     parser.add_argument('--max_grad_norm', type=float, default=0.5)
     parser.add_argument('--epsilon', type=float, default=0.2)
+    parser.add_argument('--kappa_0', type=float, default=0.8)
+    parser.add_argument('--gpd_shape', type=float, default=0.8)
+    parser.add_argument('--gpd_scale', type=float, default=0.5)
+    parser.add_argument('--opspo_tail_only_penalty', type=bool, default=False)
+    parser.add_argument('--verbose', type=bool, default=False)
     args = parser.parse_args()
     args.device = torch.device('cuda' if torch.cuda.is_available() and args.use_cuda else 'cpu')
     args.batch_size = int(args.num_envs * args.num_steps)
@@ -77,11 +86,19 @@ def compute_advantages(rewards, flags, values, next_value, args):
     return advantages
 
 
-def train(algo, env_id, seed):
-    args = get_args()
+def train(algo, env_id, seed, base_args=None):
+    args = copy.deepcopy(base_args) if base_args is not None else get_args()
     args.env_id = env_id
     args.seed = seed
-    args.algo = algo
+    args.algo = algo or args.algo
+    if args.algo == 'opspo':
+        min_bs = min(512, args.batch_size)
+        if args.minibatch_size < min_bs:
+            args.minibatch_size = min_bs
+            args.mini_batches = max(1, args.batch_size // args.minibatch_size)
+        if args.batch_size % args.minibatch_size != 0:
+            args.minibatch_size = args.batch_size
+            args.mini_batches = 1
     network = 'resnet' if args.use_resnet else 'cnn'
     run_name = args.algo + '_' + str(args.epsilon) + '_' + network + '_seed_' + str(args.seed)
     print('[algorithm:', args.algo + ']', '[env:', args.env_id + ']', '[seed:', str(args.seed) + ']')
@@ -197,17 +214,28 @@ def train(algo, env_id, seed):
     writer.close()
 
 
-def main(algo):
-    for env_id in [
-        'Assault',
-        'Asterix',
-        'BeamRider',
-        'SpaceInvaders',
-    ]:
-        for seed in [1, 2, 3]:
-            train(algo, env_id + 'NoFrameskip-v4', seed)
+def _parse_csv_list(value):
+    return [item.strip() for item in value.split(',') if item.strip()]
+
+
+def main(algo, env_ids=None, seeds=None, base_args=None):
+    if env_ids is None:
+        env_ids = [
+            'Assault',
+            'Asterix',
+            'BeamRider',
+            'SpaceInvaders',
+        ]
+    if seeds is None:
+        seeds = [1, 2, 3]
+    for env_id in env_ids:
+        for seed in seeds:
+            train(algo, env_id + 'NoFrameskip-v4', seed, base_args=base_args)
 
 
 if __name__ == '__main__':
-    # ppo or spo
-    main('spo')
+    # ppo, spo, opo, or opspo
+    args = get_args()
+    envs = _parse_csv_list(args.envs) if args.envs else None
+    seeds = [int(s) for s in _parse_csv_list(args.seeds)] if args.seeds else None
+    main(args.algo, env_ids=envs, seeds=seeds, base_args=args)

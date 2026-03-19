@@ -1,0 +1,22 @@
+{
+  "lqr": {
+    "k_star": 1.4425383545501773,
+    "P_star": 1.27408228736449
+  },
+  "behaviors": [
+    {
+      "behavior_dir": "toy_lqg_ratio_tv/outputs_multi_behavior_check/behavior_00_mu_k_+0.000",
+      "mu_k": 0.0,
+      "best_unconstrained_k": 1.4425383545501773,
+      "best_unconstrained_tv": 0.4388938172210312,
+      "num_tv_constraints": 4
+    },
+    {
+      "behavior_dir": "toy_lqg_ratio_tv/outputs_multi_behavior_check/behavior_01_mu_k_+0.400",
+      "mu_k": 0.4,
+      "best_unconstrained_k": 1.4425383545501773,
+      "best_unconstrained_tv": 0.25750491725973523,
+      "num_tv_constraints": 4
+    }
+  ]
+}

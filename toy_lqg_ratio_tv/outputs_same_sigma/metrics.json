@@ -1,0 +1,87 @@
+{
+  "config": {
+    "seed": 0,
+    "T": 10000,
+    "burnin": 1000,
+    "epsilon": 0.25,
+    "env": {
+      "a": 0.95,
+      "b": 0.5,
+      "q": 1.0,
+      "r": 0.1,
+      "sigma_xi": 0.1,
+      "gamma": 0.99
+    },
+    "mu": {
+      "k": 0.0,
+      "sigma": 1.0
+    },
+    "pi_star": {
+      "k": 1.4425383545501773,
+      "sigma": 1.0
+    }
+  },
+  "lqr": {
+    "k_star": 1.4425383545501773,
+    "P_star": 1.27408228736449
+  },
+  "mu_value": {
+    "P_mu": 9.387467730579669,
+    "C_mu": -251.63341938512045
+  },
+  "star": {
+    "E_abs_R_minus_1": 1.0326165424624008,
+    "TV": 0.5163082712312004
+  },
+  "advantage_split": {
+    "adv_positive_count": 5872,
+    "adv_negative_count": 4128,
+    "adv_zero_count": 0
+  },
+  "tv_sweep": [
+    {
+      "target_tv": 0.0,
+      "alpha": 0.0,
+      "empirical_tv": 0.0,
+      "empirical_E_abs_R_minus_1": 0.0
+    },
+    {
+      "target_tv": 0.10326165424624008,
+      "alpha": 0.2,
+      "empirical_tv": 0.10326165424624008,
+      "empirical_E_abs_R_minus_1": 0.20652330849248016
+    },
+    {
+      "target_tv": 0.20652330849248016,
+      "alpha": 0.4,
+      "empirical_tv": 0.20652330849248016,
+      "empirical_E_abs_R_minus_1": 0.4130466169849603
+    },
+    {
+      "target_tv": 0.30978496273872025,
+      "alpha": 0.6000000000000001,
+      "empirical_tv": 0.3097849627387203,
+      "empirical_E_abs_R_minus_1": 0.6195699254774406
+    },
+    {
+      "target_tv": 0.4130466169849603,
+      "alpha": 0.8,
+      "empirical_tv": 0.4130466169849602,
+      "empirical_E_abs_R_minus_1": 0.8260932339699204
+    },
+    {
+      "target_tv": 0.5163082712312004,
+      "alpha": 1.0,
+      "empirical_tv": 0.5163082712312004,
+      "empirical_E_abs_R_minus_1": 1.0326165424624008
+    }
+  ],
+  "epsilon_policy": {
+    "epsilon": 0.25,
+    "alpha": 0.2421034234100534,
+    "predicted_E_abs_R_minus_1": 0.25,
+    "empirical_E_abs_R_minus_1": 0.24999999999999994,
+    "empirical_TV": 0.12499999999999997,
+    "pointwise_ratio_identity_max_error": 5.684341886080802e-14
+  }
+}

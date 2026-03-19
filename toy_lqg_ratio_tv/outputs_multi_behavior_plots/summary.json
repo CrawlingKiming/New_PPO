@@ -1,0 +1,22 @@
+{
+  "lqr": {
+    "k_star": 1.4425383545501773,
+    "P_star": 1.27408228736449
+  },
+  "behaviors": [
+    {
+      "behavior_dir": "toy_lqg_ratio_tv/outputs_multi_behavior_plots/behavior_00_mu_k_+0.000",
+      "mu_k": 0.0,
+      "best_unconstrained_k": 1.4425383545501773,
+      "best_unconstrained_tv": 0.4323839368057344,
+      "num_tv_constraints": 5
+    },
+    {
+      "behavior_dir": "toy_lqg_ratio_tv/outputs_multi_behavior_plots/behavior_01_mu_k_+0.400",
+      "mu_k": 0.4,
+      "best_unconstrained_k": 1.442538354550177,
+      "best_unconstrained_tv": 0.2671302639568383,
+      "num_tv_constraints": 5
+    }
+  ]
+}

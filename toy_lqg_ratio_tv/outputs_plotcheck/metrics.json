@@ -1,0 +1,66 @@
+{
+  "config": {
+    "seed": 0,
+    "T": 2000,
+    "burnin": 200,
+    "epsilon": 0.25,
+    "env": {
+      "a": 0.95,
+      "b": 0.5,
+      "q": 1.0,
+      "r": 0.1,
+      "sigma_xi": 0.1,
+      "gamma": 0.99
+    },
+    "mu": {
+      "k": 0.0,
+      "sigma": 1.0
+    },
+    "pi_star": {
+      "k": 1.4425383545501773,
+      "sigma": 0.2
+    }
+  },
+  "lqr": {
+    "k_star": 1.4425383545501773,
+    "P_star": 1.27408228736449
+  },
+  "star": {
+    "E_abs_R_minus_1": 1.4083082870959271,
+    "TV": 0.7041541435479636
+  },
+  "tv_sweep": [
+    {
+      "target_tv": 0.0,
+      "alpha": 0.0,
+      "empirical_tv": 0.0,
+      "empirical_E_abs_R_minus_1": 0.0
+    },
+    {
+      "target_tv": 0.23471804784932118,
+      "alpha": 0.3333333333333333,
+      "empirical_tv": 0.23471804784932118,
+      "empirical_E_abs_R_minus_1": 0.46943609569864236
+    },
+    {
+      "target_tv": 0.46943609569864236,
+      "alpha": 0.6666666666666666,
+      "empirical_tv": 0.46943609569864236,
+      "empirical_E_abs_R_minus_1": 0.9388721913972847
+    },
+    {
+      "target_tv": 0.7041541435479636,
+      "alpha": 1.0,
+      "empirical_tv": 0.7041541435479636,
+      "empirical_E_abs_R_minus_1": 1.4083082870959271
+    }
+  ],
+  "epsilon_policy": {
+    "epsilon": 0.25,
+    "alpha": 0.17751794993376419,
+    "predicted_E_abs_R_minus_1": 0.25,
+    "empirical_E_abs_R_minus_1": 0.24999999999999994,
+    "empirical_TV": 0.12499999999999997,
+    "pointwise_ratio_identity_max_error": 2.6645352591003757e-15
+  }
+}

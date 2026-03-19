@@ -1,0 +1,180 @@
+{
+  "config": {
+    "seed": 1,
+    "T": 3000,
+    "burnin": 300,
+    "epsilon": null,
+    "env": {
+      "a": 0.95,
+      "b": 0.5,
+      "q": 1.0,
+      "r": 0.1,
+      "sigma_xi": 0.1,
+      "gamma": 0.99
+    },
+    "mu": {
+      "k": 0.4,
+      "sigma": 1.0
+    },
+    "pi_star": {
+      "k": 1.4425383545501773,
+      "sigma": 1.0
+    }
+  },
+  "lqr": {
+    "k_star": 1.4425383545501773,
+    "P_star": 1.27408228736449
+  },
+  "star": {
+    "E_abs_R_minus_1": 0.5342605279136767,
+    "TV": 0.26713026395683837
+  },
+  "sweep_setup": {
+    "k_points": 7,
+    "k_min": -0.6425383545501772,
+    "k_max": 2.4850767091003543,
+    "tv_constraints": [
+      0.0,
+      0.08,
+      0.16,
+      0.24,
+      0.7084266782667482
+    ]
+  },
+  "k_sweep": [
+    {
+      "k": -0.6425383545501772,
+      "stable": false,
+      "P": null,
+      "C": null,
+      "value_s0": null,
+      "E_abs_R_minus_1": 0.5063196895207017,
+      "TV": 0.25315984476035086
+    },
+    {
+      "k": -0.12126917727508857,
+      "stable": false,
+      "P": null,
+      "C": null,
+      "value_s0": null,
+      "E_abs_R_minus_1": 0.25893865857797593,
+      "TV": 0.12946932928898797
+    },
+    {
+      "k": 0.4,
+      "stable": true,
+      "P": 2.2928067700987307,
+      "C": -69.01684626234126,
+      "value_s0": -69.01684626234126,
+      "E_abs_R_minus_1": 0.0,
+      "TV": 0.0
+    },
+    {
+      "k": 0.9212691772750886,
+      "stable": true,
+      "P": 1.4220088353708502,
+      "C": -46.60250742244564,
+      "value_s0": -46.60250742244564,
+      "E_abs_R_minus_1": 0.25711819899723726,
+      "TV": 0.12855909949861863
+    },
+    {
+      "k": 1.442538354550177,
+      "stable": true,
+      "P": 1.274082287364536,
+      "C": -42.79487807676312,
+      "value_s0": -42.79487807676312,
+      "E_abs_R_minus_1": 0.5342605279136766,
+      "TV": 0.2671302639568383
+    },
+    {
+      "k": 1.4425383545501773,
+      "stable": true,
+      "P": 1.274082287364536,
+      "C": -42.79487807676312,
+      "value_s0": -42.79487807676312,
+      "E_abs_R_minus_1": 0.5342605279136767,
+      "TV": 0.26713026395683837
+    },
+    {
+      "k": 1.9638075318252657,
+      "stable": true,
+      "P": 1.3870516950511718,
+      "C": -45.70271063061712,
+      "value_s0": -45.70271063061712,
+      "E_abs_R_minus_1": 0.9352155993496787,
+      "TV": 0.46760779967483934
+    },
+    {
+      "k": 2.4850767091003543,
+      "stable": true,
+      "P": 1.7672906145422536,
+      "C": -55.49006041831756,
+      "value_s0": -55.49006041831756,
+      "E_abs_R_minus_1": 1.4168533565334964,
+      "TV": 0.7084266782667482
+    }
+  ],
+  "best_unconstrained": {
+    "k": 1.442538354550177,
+    "value_s0": -42.79487807676312,
+    "TV": 0.2671302639568383
+  },
+  "best_by_tv_constraint": [
+    {
+      "tv_constraint": 0.0,
+      "selected_k": 0.4,
+      "selected_tv": 0.0,
+      "selected_value_s0": -69.01684626234126,
+      "feasible_count": 1,
+      "fallback_used": false,
+      "adv_positive_count": 1942,
+      "adv_negative_count": 1058,
+      "adv_zero_count": 0
+    },
+    {
+      "tv_constraint": 0.08,
+      "selected_k": 0.4,
+      "selected_tv": 0.0,
+      "selected_value_s0": -69.01684626234126,
+      "feasible_count": 1,
+      "fallback_used": false,
+      "adv_positive_count": 1942,
+      "adv_negative_count": 1058,
+      "adv_zero_count": 0
+    },
+    {
+      "tv_constraint": 0.16,
+      "selected_k": 0.9212691772750886,
+      "selected_tv": 0.12855909949861863,
+      "selected_value_s0": -46.60250742244564,
+      "feasible_count": 2,
+      "fallback_used": false,
+      "adv_positive_count": 1719,
+      "adv_negative_count": 1281,
+      "adv_zero_count": 0
+    },
+    {
+      "tv_constraint": 0.24,
+      "selected_k": 0.9212691772750886,
+      "selected_tv": 0.12855909949861863,
+      "selected_value_s0": -46.60250742244564,
+      "feasible_count": 2,
+      "fallback_used": false,
+      "adv_positive_count": 1719,
+      "adv_negative_count": 1281,
+      "adv_zero_count": 0
+    },
+    {
+      "tv_constraint": 0.7084266782667482,
+      "selected_k": 1.442538354550177,
+      "selected_tv": 0.2671302639568383,
+      "selected_value_s0": -42.79487807676312,
+      "feasible_count": 6,
+      "fallback_used": false,
+      "adv_positive_count": 1629,
+      "adv_negative_count": 1371,
+      "adv_zero_count": 0
+    }
+  ]
+}

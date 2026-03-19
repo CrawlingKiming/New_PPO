@@ -1,4 +1,5 @@
 import argparse
+import copy
 import random
 import time
 
@@ -12,10 +13,23 @@ from tqdm import tqdm
 from agent import Agent
 from trainer import Trainer
 
+ALGO_ALIASES = {
+    'opo-fixed-loss': 'opspo_fixed',
+    'opo-fixed-adv-loss': 'opspo_fixed_adv',
+}
+ALGO_CHOICES = [
+    'ppo', 'ppo_lambda', 'tr-ppo', 'spo', 'opo', 'opo-penalty', 'opspo', 'opspo_naive', 'oppo_ranked_clip',
+    'opspo_fixed', 'opspo_fixed_adv', 'opspo_fixed_anneal',
+    *ALGO_ALIASES.keys(),
+]
+
 
 def get_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--policy_layers', type=int, choices=[3, 7], default=7)
+    parser.add_argument('--algo', choices=ALGO_CHOICES, default='spo')
+    parser.add_argument('--envs', type=str, default=None, help='Comma-separated MuJoCo env IDs')
+    parser.add_argument('--seeds', type=str, default=None, help='Comma-separated random seeds')
+    parser.add_argument('--policy_layers', type=int, choices=[3, 7], default=3)
     parser.add_argument('--use_cuda', type=bool, default=True)
     parser.add_argument('--torch_deterministic', type=bool, default=True)
     parser.add_argument('--total_time_steps', type=int, default=int(1e7))
@@ -25,7 +39,7 @@ def get_args():
     parser.add_argument('--num_steps', type=int, default=256)
     parser.add_argument('--gamma', type=float, default=0.99)
     parser.add_argument('--gae_lambda', type=float, default=0.95)
-    parser.add_argument('--mini_batches', type=int, choices=[4, 32], default=4)
+    parser.add_argument('--mini_batches', type=int, choices=[1, 4, 32], default=4)
     parser.add_argument('--update_epochs', type=int, default=10)
     parser.add_argument('--advantage_normalization', type=bool, default=True)
     parser.add_argument('--clip_value_loss', type=bool, default=True)
@@ -33,13 +47,26 @@ def get_args():
     parser.add_argument('--c_2', type=float, default=0.0)
     parser.add_argument('--max_grad_norm', type=float, default=0.5)
     parser.add_argument('--epsilon', type=float, default=0.2)
+    parser.add_argument('--initial_epsilon', type=float, default=None)
+    parser.add_argument('--lambda_0', type=float, default=1.0)
+    parser.add_argument('--kappa_0', type=float, default=0.8)
+    parser.add_argument('--gpd_shape', type=float, default=0.49)
+    parser.add_argument('--gpd_scale', type=float, default=0.5)
+    parser.add_argument('--opspo_tail_only_penalty', type=bool, default=False)
+    parser.add_argument('--verbose', type=bool, default=False)
     # This is for PPO
     parser.add_argument('--adaptive_learning_rate', type=bool, default=False)
     parser.add_argument('--desired_kl', type=float, default=0.01)
     args = parser.parse_args()
+    if args.initial_epsilon is None:
+        args.initial_epsilon = args.epsilon
     args.batch_size = int(args.num_envs * args.num_steps)
     args.minibatch_size = int(args.batch_size // args.mini_batches)
     return args
+
+
+def normalize_algo_name(algo):
+    return ALGO_ALIASES.get(algo, algo)
 
 
 def make_env(env_id, gamma):
@@ -56,11 +83,15 @@ def make_env(env_id, gamma):
     return thunk
 
 
-def main(env_id, seed, algo):
-    args = get_args()
+def main(env_id, seed, algo, base_args=None):
+    args = copy.deepcopy(base_args) if base_args is not None else get_args()
     args.env_id = env_id
     args.seed = seed
-    args.algo = algo
+    args.algo = normalize_algo_name(algo or args.algo)
+    if args.algo == 'opspo_fixed_adv':
+        # Force full-batch updates for this variant: one minibatch per epoch.
+        args.minibatch_size = args.batch_size
+        args.mini_batches = 1
 
     # Adaptive learning rate
     if args.adaptive_learning_rate and args.algo == 'ppo':
@@ -75,7 +106,7 @@ def main(env_id, seed, algo):
     )
     if args.adaptive_learning_rate and args.algo == 'ppo':
         run_name += '_adaptive_lr'
-    assert args.algo in ['ppo', 'tr-ppo', 'spo'], 'wrong algorithm name'
+    assert args.algo in ALGO_CHOICES, 'wrong algorithm name'
     print('[algorithm:', args.algo + ']', '[env:', args.env_id + ']', '[seed:', str(args.seed) + ']')
 
     # Save training logs
@@ -199,7 +230,19 @@ def main(env_id, seed, algo):
         b_std = std.reshape(args.batch_size, -1)
 
         # Train
-        trainer.train(global_step, b_obs, b_actions, b_log_probs, b_advantages, b_returns, b_values, b_mean, b_std)
+        trainer.train(
+            global_step,
+            b_obs,
+            b_actions,
+            b_log_probs,
+            b_advantages,
+            b_returns,
+            b_values,
+            b_mean,
+            b_std,
+            current_update=update,
+            total_updates=num_updates,
+        )
 
         # Save the data during the training process
         y_pre, y_true = b_values.cpu().numpy(), b_returns.cpu().numpy()
@@ -213,22 +256,33 @@ def main(env_id, seed, algo):
     writer.close()
 
 
-def run(algo):
+def _parse_csv_list(value):
+    return [item.strip() for item in value.split(',') if item.strip()]
+
+
+def run(algo, env_ids=None, seeds=None, base_args=None):
     """
     Choose the environments and random seeds
     """
-    for env_id in [
-        # 'Ant-v4',
-        # 'HalfCheetah-v4',
-        # 'Hopper-v4',
-        'Humanoid-v4',
-        # 'HumanoidStandup-v4',
-        # 'Walker2d-v4'
-    ]:
-        for seed in [1, 2, 3, 4, 5]:
-            main(env_id, seed, algo)
+    if env_ids is None:
+        env_ids = [
+            # 'Ant-v4',
+            # 'HalfCheetah-v4',
+            # 'Hopper-v4',
+            'Humanoid-v4',
+            # 'HumanoidStandup-v4',
+            # 'Walker2d-v4'
+        ]
+    if seeds is None:
+        seeds = [1, 2, 3, 4, 5]
+    for env_id in env_ids:
+        for seed in seeds:
+            main(env_id, seed, algo, base_args=base_args)
 
 
 if __name__ == '__main__':
-    # ppo or spo
-    run('spo')
+    # ppo, spo, opo, opspo, or opspo_fixed
+    args = get_args()
+    envs = _parse_csv_list(args.envs) if args.envs else None
+    seeds = [int(s) for s in _parse_csv_list(args.seeds)] if args.seeds else None
+    run(args.algo, env_ids=envs, seeds=seeds, base_args=args)
